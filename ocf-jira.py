@@ -462,7 +462,7 @@ def ppt_page(prs, bugs, counter, page_counter, per_page, components=None, title=
                         for jira_entry in jira_array:
                             r.text = str(jira_entry)
                             r.hyperlink.address = "https://jira.iotivity.org/browse/"+jira_entry
-                            jira_status += get_jira_status(jira_number)+ " "
+                            jira_status += get_jira_status(jira_entry)+ " "
                             r = p.add_run()
                     else:
                         r.text = str(jira_number)
