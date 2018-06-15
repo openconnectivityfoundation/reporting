@@ -544,7 +544,7 @@ def ppt_page(prs, bugs, counter, page_counter, per_page, components=None, title=
             # make fonts smaller
             # update color for for the priority
             for index in range(cols):
-                paragraph = table.cell(counter, index).textframe.paragraphs[0]
+                paragraph = table.cell(counter, index).text_frame.paragraphs[0]
                 paragraph.font.size = Pt(12)
                 if bug_priority in ["Highest"]:
                     paragraph.font.color.rgb = RGBColor(0xFF, 0x00, 0x00)
