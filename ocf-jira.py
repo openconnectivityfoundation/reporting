@@ -331,7 +331,7 @@ def ppt_page(prs, bugs, counter, page_counter, per_page, components=None, title=
         shapes.title.text = str(title) + ' CR overview '+ str(page_counter)
 
     rows =  len(bugs)+1
-    cols = 10
+    cols = 11
 
     left = Inches(0.0)
     top = Inches(1.5)
@@ -342,15 +342,16 @@ def ppt_page(prs, bugs, counter, page_counter, per_page, components=None, title=
 
     # set column widths
     table.columns[0].width = Inches(0.6)
-    table.columns[1].width = Inches(2.2)
+    table.columns[1].width = Inches(2.0)
     table.columns[2].width = Inches(1.0)
     table.columns[3].width = Inches(0.6)
     table.columns[4].width = Inches(1.0)
-    table.columns[5].width = Inches(1.0)
+    table.columns[5].width = Inches(0.6)
     table.columns[6].width = Inches(1.0)
     table.columns[7].width = Inches(0.6)
     table.columns[8].width = Inches(1.0)
     table.columns[9].width = Inches(1.0)
+    table.columns[10].width = Inches(0.6)
 
     total_width = 0
     for column in table.columns:
@@ -371,12 +372,13 @@ def ppt_page(prs, bugs, counter, page_counter, per_page, components=None, title=
     table.cell(0, 1).text = 'Description'
     table.cell(0, 2).text = 'Status'
     table.cell(0, 3).text = 'Jira'
-    table.cell(0, 4).text = 'Status'
-    table.cell(0, 5).text = 'Test requirements'
+    table.cell(0, 4).text = 'Status,\nAssignee'
+    table.cell(0, 5).text = 'CTR'
     table.cell(0, 6).text = 'Status'
     table.cell(0, 7).text = 'CTT'
     table.cell(0, 8).text = 'Status'
     table.cell(0, 9).text = 'component'
+    table.cell(0,10).text = 'Deps'
 
     counter = 1
     for bug in bugs:
@@ -446,6 +448,7 @@ def ppt_page(prs, bugs, counter, page_counter, per_page, components=None, title=
             else:
                 jira_number = jira_dict.get(str(bug_id))
                 jira_status = "unknown"
+                jira_assignee = "unknown"
                 print ("bugid ==> jira_number:",str(bug_id), jira_number )
                 #if jira_number is not None:
                 #    jira_status = get_jira_status(jira_number)
@@ -468,10 +471,11 @@ def ppt_page(prs, bugs, counter, page_counter, per_page, components=None, title=
                         r.text = str(jira_number)
                         r.hyperlink.address = "https://jira.iotivity.org/browse/"+jira_txt
                         jira_status = get_jira_status(jira_number)
+                        jira_assignee = get_jira_assignee(jira_number)
                 else:
                     r.text = "Missing"
                     #r.text = str(jira_number)
-                table.cell(counter, 4).text = str(jira_status)
+                table.cell(counter, 4).text = str(jira_status+",\n"+jira_assignee)
 
             # test requirements and CTT
             # column 5 &6
@@ -540,6 +544,19 @@ def ppt_page(prs, bugs, counter, page_counter, per_page, components=None, title=
 
             # bug component it resides in.
             table.cell(counter, 9).text = str(bug_comp)
+
+            # Add dependency information
+            if len(bug.depends_on) > 0:
+                p = table.cell(counter, 10).text_frame.paragraphs[0]
+                for item in bug.depends_on:
+                    r = p.add_run()
+                    r.text = str(item)
+                    r.hyperlink.address = "https://bugzilla.upnp.org/show_bug.cgi?id="+str(item)
+                    # add white space
+                    r = p.add_run()
+                    r.text = " "
+            else:
+                table.cell(counter, 10).text = "None"
 
             # make fonts smaller
             # update color for for the priority
@@ -770,6 +787,16 @@ def get_jira_status(issue_number):
     my_issue = jira.issue(issue_number)
     #print (my_issue)
     return str(my_issue.fields.status)
+
+def get_jira_assignee(issue_number):
+    """
+    retrieves the assignee of a jira bug
+    :param issue_number: full jira issue number (including prefix)
+    :return: assignee of the bug
+    """
+    my_issue = jira.issue(issue_number)
+    #print (my_issue)
+    return str(my_issue.fields.assignee)
 
 def get_bugzilla_status(my_bug_list, issue_number):
     """
