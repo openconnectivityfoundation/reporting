@@ -157,7 +157,7 @@ def filter_bugs(bugs):
                 if args.verbose:
                     print ("ignoring (not open) :",bug.id, bug.status)
         if args.version is not None:
-            if bug.version not in args.version:
+            if bug.version != args.version:
                 add_bug=False
                 if args.verbose:
                     print ("ignoring (version) :",bug.id, bug.version)
