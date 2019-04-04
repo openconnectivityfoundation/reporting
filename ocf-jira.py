@@ -1020,7 +1020,10 @@ request_size=500
 got = request_size
 total = 0
 while got==request_size:
-    issues_in_proj = jira.search_issues('project=IOT and cf[10500] is not EMPTY', startAt = total, maxResults= request_size)
+    #issues_in_proj = jira.search_issues('project=IOT and cf[10500] is not EMPTY', startAt = total, maxResults= request_size)
+    issues_in_proj_iot = jira.search_issues('project=IOT and cf[10500] is not EMPTY', startAt = total, maxResults= request_size)
+    issues_in_proj_lite = jira.search_issues('project=LITE and cf[10500] is not EMPTY', startAt = total, maxResults= request_size)
+    issues_in_proj = issues_in_proj_iot + issues_in_proj_lite
 
     got = len(issues_in_proj)
     total += got
